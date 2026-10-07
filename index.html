@@ -220,7 +220,7 @@
 
 <main class="invite">
   <div class="film">
-    <video id="film" src="adonai.mp4" poster="poster.jpg" muted loop playsinline preload="auto" aria-label="The Adonai emblem, a tent with a flame inside, among rising embers"></video>
+    <video id="film" src="adonai.mp4" poster="poster.jpg" muted autoplay loop playsinline preload="auto" aria-label="The Adonai emblem, a tent with a flame inside, among rising embers"></video>
   </div>
 
   <div class="words">
@@ -250,8 +250,20 @@
   (function () {
     var film = document.getElementById("film");
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    var p = film.play();
-    if (p && p.catch) p.catch(function () {});
+    function start() {
+      if (!film.paused) return;
+      var p = film.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+    start();
+    film.addEventListener("canplay", start);
+    window.addEventListener("pageshow", start);
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) start();
+    });
+    ["touchstart", "click", "scroll"].forEach(function (name) {
+      window.addEventListener(name, start, { passive: true });
+    });
   })();
 </script>
 </body>
